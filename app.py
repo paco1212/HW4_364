@@ -169,7 +169,7 @@ class GifSearchForm(FlaskForm):
 
 class CollectionCreateForm(FlaskForm):
     name = StringField('Collection Name',validators=[Required()])
-    gif_picks = SelectMultipleField('GIFs to include', choices = [])
+    gif_picks = SelectMultipleField('GIFs to include', choices = [], validators = [Required()])
     submit = SubmitField("Create Collection")
 
 ########################
@@ -346,15 +346,22 @@ def all_gifs():
 def create_collection():
     form = CollectionCreateForm()
     gifs = Gif.query.all()
-    choices = [(g.id, g.title) for g in gifs]
+    choices = [(str(g.id), g.title) for g in gifs]
     form.gif_picks.choices = choices
-    # TODO 364: If the form validates on submit, get the list of the gif ids that were selected from the form. Use the get_gif_by_id function to create a list of Gif objects.  Then, use the information available to you at this point in the function (e.g. the list of gif objects, the current_user) to invoke the get_or_create_collection function, and redirect to the page that shows a list of all your collections.
-    if request.method == 'POST':
+    # TODO 364: If the form validates on submit, get the list of the gif ids
+    # that were selected from the form. Use the get_gif_by_id function to
+    # create a list of Gif objects.  Then, use the information available to
+    # you at this point in the function (e.g. the list of gif objects, the
+    # current_user) to invoke the get_or_create_collection function, and
+    # redirect to the page that shows a list of all your collections.
+
+    if form.validate_on_submit(): 
         selected = form.gif_picks.data
         name = form.name.data
         gif_ids = [get_gif_by_id(num) for num in selected]
         get_or_create_collection(name, current_user, gif_ids)
         return redirect(url_for('collections'))
+
     
     # If the form is not validated, this view function should simply render the create_collection.html template and send the form to the template.
     return render_template('create_collection.html', form = form)

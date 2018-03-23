@@ -7,9 +7,15 @@
 
 {% block main_content %}
 <form method="POST">
+	{{ form.csrf_token }}
 	{{ form.hidden_tag() }}
 	{{ form.name.label }} {{ form.name() }}
 	{{ form.gif_picks.label }} {{ form.gif_picks() }}
 	{{ form.submit() }}
 </form>
+
+{% for error in form.gif_picks.errors %}
+    <p>{{error}}</p>
+{% endfor %}
+
 {% endblock %}
