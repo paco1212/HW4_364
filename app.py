@@ -187,6 +187,7 @@ def get_gifs_from_giphy(search_string):
     params['limit'] = 5
     resp = requests.get(baseurl, params = params)
     resp_object = json.loads(resp.text)
+    print(resp.url)
     list_of_dictionaries = resp_object['data']
     return list_of_dictionaries
     # HINT 2: test out this function outside your Flask application, in a regular simple Python program, with a bunch of print statements and sample invocations, to make sure it works!
@@ -222,7 +223,7 @@ def get_or_create_search_term(term):
 
 
     # It should iterate over that list acquired from Giphy and invoke get_or_create_gif for each, and then append the return value from get_or_create_gif to the search term's associated gifs (remember, many-to-many relationship between search terms and gifs, allowing you to do this!).
-        gifs = [get_or_create_gif(term, diction['url']) for diction in json_obj]
+        gifs = [get_or_create_gif(term, diction['embed_url']) for diction in json_obj]
         search_term.gifs.extend(gifs)
 
     # If a new search term were created, it should finally be added and committed to the database.
@@ -235,7 +236,7 @@ def get_or_create_search_term(term):
 
 def get_or_create_collection(name, current_user, gif_list=[]):
     """Always returns a PersonalGifCollection instance"""
-    pass # Replace with code
+    # pass # Replace with code
 
     # TODO 364: This function should get or create a personal gif collection. Uniqueness of the gif collection should be determined by the name of the collection and the id of the logged in user.
     collection = PersonalGifCollection.query.filter_by(name = name, user_id = current_user.id).first()
